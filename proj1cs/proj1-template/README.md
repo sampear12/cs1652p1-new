@@ -1,4 +1,7 @@
 # CS 1652: Project 1
+Samika Sanghvi and Aleksandar Smith
+
+Test Env: x86
 
 ## Overview
 
