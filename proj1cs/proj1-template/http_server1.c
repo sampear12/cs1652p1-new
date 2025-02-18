@@ -64,7 +64,12 @@
      }
      
      /* open and read the file */
-     FILE *fp = fopen(file_path + 1, "rb"); // skip the leading '/'
+     FILE *fp;
+     char *actual_file_path = file_path;
+     if (file_path[0] == '/') {
+        actual_file_path += 1;
+     }
+     fp = fopen(actual_file_path, "rb"); // skip the leading '/'
      if (!fp) {
          /* send 404 response */
          send(conn_sock, notok_response, strlen(notok_response), 0);
@@ -74,7 +79,7 @@
      
      // Get file size
      struct stat st;
-     if (stat(file_path + 1, &st) < 0) {
+     if (stat(actual_file_path, &st) < 0) {
          fclose(fp);
          close(conn_sock);
          return -1;
@@ -104,7 +109,7 @@
  main(int argc, char ** argv)
  {
      int server_port = -1;
-     int ret         =  0;
+     // int ret         =  0; UNUSED
      int listen_sock = -1;
  
      /* parse command line args */
@@ -161,8 +166,7 @@
              perror("accept");
              continue;
          }
-         ret = handle_connection(conn_sock);
-        //  (void)ret; // DELETE ME
+         handle_connection(conn_sock);
      }
      close(listen_sock);
      return 0;

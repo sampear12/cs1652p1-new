@@ -125,7 +125,7 @@
          } else if (n == 0) {
              break;
          }
-         if (header_len + n < sizeof(response_header)) {
+         if (header_len + n < (int) sizeof(response_header)) {
              memcpy(response_header + header_len, buffer, n);
              header_len += n;
              response_header[header_len] = '\0';

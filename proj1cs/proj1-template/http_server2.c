@@ -60,7 +60,12 @@
      }
      
      /* open and read the file */
-     FILE *fp = fopen(file_path + 1, "rb"); // skip the leading '/'
+     FILE *fp;
+     char *actual_file_path = file_path;
+     if (file_path[0] == '/') {
+        actual_file_path += 1;
+     }
+     fp = fopen(actual_file_path, "rb"); // skip the leading '/'
      if (!fp) {
          send(conn_sock, notok_response, strlen(notok_response), 0);
          close(conn_sock);
@@ -68,7 +73,7 @@
      }
      
      struct stat st;
-     if (stat(file_path + 1, &st) < 0) {
+     if (stat(actual_file_path, &st) < 0) {
          fclose(fp);
          close(conn_sock);
          return -1;
@@ -97,7 +102,7 @@
  main(int argc, char ** argv)
  {
      int server_port = -1;
-     int ret         =  0;
+     // int ret         =  0; UNUSED
      int listen_sock = -1;
      int client_socks[MAX_CONNECTIONS];
      int num_clients = 0;
@@ -184,7 +189,7 @@
          // Check each client socket
          for (i = 0; i < num_clients; ) {
              if (FD_ISSET(client_socks[i], &read_fds)) {
-                 ret = handle_connection(client_socks[i]);
+                 handle_connection(client_socks[i]);
                  // Remove this socket from the list by shifting others
                  for (int j = i; j < num_clients - 1; j++) {
                      client_socks[j] = client_socks[j+1];
